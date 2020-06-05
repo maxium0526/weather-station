@@ -1,0 +1,3 @@
+client/setup.h
+server/mysql_connection.js
+server/node_modules

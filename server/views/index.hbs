@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="https://d3js.org/d3.v4.js"></script>
+</head>
+<body>
+	<div id="my_dataviz"></div>
+
+	<script type="text/javascript">
+		var margin = {top: 10, right: 30, bottom: 30, left: 60},
+			width = 1600 - margin.left - margin.right,
+		    height = 600 - margin.top - margin.bottom;
+
+		    var svg = d3.select("#my_dataviz")
+  				.append("svg")
+    			.attr("width", width + margin.left + margin.right)
+    			.attr("height", height + margin.top + margin.bottom)
+  				.append("g")
+    			.attr("transform",
+          				"translate(" + margin.left + "," + margin.top + ")");
+
+		d3.json("/getRecord", function(data) {
+			// Add X axis --> it is a date format
+			var x = d3.scaleTime()
+				.domain(d3.extent(data, function(d) { return new Date(d.date); }))
+				.range([ 0, width ]);
+			svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
+
+				// Add Y axis
+			var ytemp1 = d3.scaleLinear()
+				.domain([0, 40])
+				.range([ height, 0 ]);
+			svg.append("g")
+				.call(d3.axisLeft(ytemp1));
+
+			var ytemp2 = d3.scaleLinear()
+				.domain([0, 40])
+				.range([ height, 0 ]);
+			svg.append("g")
+				.attr("transform", "translate(" + width + ", 0)")
+				.call(d3.axisLeft(ytemp2));
+
+			var yhumi1 = d3.scaleLinear()
+				.domain([0, 100])
+				.range([ height, 0 ]);
+			svg.append("g")
+				.attr("transform", "translate(" + width + ", 0)")
+				.call(d3.axisRight(yhumi1));
+
+			var yhumi2 = d3.scaleLinear()
+				.domain([0, 100])
+				.range([ height, 0 ]);
+			svg.append("g")
+				.call(d3.axisRight(yhumi2));
+
+				// Add the line
+			svg.append("path")
+				.datum(data)
+				.attr("fill", "none")
+				.attr("stroke", "#FF0000")
+				.attr("stroke-width", 1.5)
+				.attr("d", d3.line()
+				.x(function(d) { return x(new Date(d.date)) })
+				.y(function(d) { return ytemp1(d.temp) })
+			)
+
+			svg.append("path")
+				.datum(data)
+				.attr("fill", "none")
+				.attr("stroke", "#FFAAAA")
+				.attr("stroke-width", 1.5)
+				.attr("d", d3.line()
+				.x(function(d) { return x(new Date(d.date)) })
+				.y(function(d) { return ytemp1(d.hi) })
+			)
+
+			svg.append("path")
+				.datum(data)
+				.attr("fill", "none")
+				.attr("stroke", "#0000FF")
+				.attr("stroke-width", 1.5)
+				.attr("d", d3.line()
+				.x(function(d) { return x(new Date(d.date)) })
+				.y(function(d) { return yhumi1(d.humi) })
+			)
+
+			svg.append("path")
+				.datum(data)
+				.attr("fill", "none")
+				.attr("stroke", "#AAAAFF")
+				.attr("stroke-width", 1.5)
+				.attr("d", d3.line()
+				.x(function(d) { return x(new Date(d.date)) })
+				.y(function(d) { return ytemp1(d.dp) })
+			)
+
+
+		})
+	</script>
+</body>
+</html>
